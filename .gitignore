@@ -1,0 +1,14 @@
+# Crown jewels never commit. The bot token lives in the Codespace environment only.
+.env
+.env.*
+*.pem
+*.key
+
+# Runtime
+node_modules/
+npm-debug.log*
+*.log
+
+# OS noise
+.DS_Store
+Thumbs.db
