@@ -123,15 +123,15 @@ function foldHomoglyphsV10(text){var out='';for(var i=0;i<text.length;i++){var c
 
 function normalizeText(t){
   t=foldHomoglyphsV10(t);
-  t=t.replace(/^﻿/,'').replace(/\r\n?/g,'\n')
-   .replace(/[​-‏  ‪-‬⁠-⁤⁦-⁩﻿­]/g,'')
-   .replace(/[ 	]+/g,' ').replace(/  +/g,' ');
+  t=t.replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n')
+   .replace(/[\u200B-\u200F\u2028\u2029\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF\u00AD]/g,'')
+   .replace(/[\u00A0\t\u000B\u000C]+/g,' ').replace(/  +/g,' ');
   var out='',i=0;
   while(i<t.length){var c=t.charCodeAt(i);
-    if(c>=0xD800&&c<=0xDBFF){var d=t.charCodeAt(i+1);if(d>=0xDC00&&d<=0xDFFF){out+=t[i]+t[i+1];i+=2;continue}out+='�';i++;continue}
-    if(c>=0xDC00&&c<=0xDFFF){out+='�';i++;continue}
+    if(c>=0xD800&&c<=0xDBFF){var d=t.charCodeAt(i+1);if(d>=0xDC00&&d<=0xDFFF){out+=t[i]+t[i+1];i+=2;continue}out+='\uFFFD';i++;continue}
+    if(c>=0xDC00&&c<=0xDFFF){out+='\uFFFD';i++;continue}
     out+=t[i];i++;}
-  out=out.replace(/[̀-ͯ᪰-᫿᷀-᷿︠-︯]/g,'');
+  out=out.replace(/[\u0300-\u036F\u1AB0-\u1AFF\u1DC0-\u1DFF\uFE20-\uFE2F]/g,'');
   return out.normalize('NFKC');}
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
