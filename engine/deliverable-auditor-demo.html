@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TEZCATL · Deliverable Auditor — Live Demo | Team Axis Sovereign Energy</title>
+<style>
+:root{--bg:#0a0d14;--surface:#111520;--surface2:#161c2d;--border:#1e2a45;--gold:#c8a84b;
+--text:#d4dde8;--text2:#7a8fa8;--red:#c0392b;--green:#27ae60;--yellow:#f1c40f;--blue:#2980b9;--purple:#8e44ad;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;min-height:100vh}
+.header{background:linear-gradient(135deg,#0a0d14,#111a2e);border-bottom:2px solid var(--gold);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.logo{font-size:18px;font-weight:800;color:var(--gold);letter-spacing:2px}
+.logo span{color:#fff;font-weight:300}
+.badge{background:var(--surface2);border:1px solid var(--border);padding:3px 12px;border-radius:20px;font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase}
+.wrap{max-width:1100px;margin:0 auto;padding:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:16px}
+.card-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+input[type=text],textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:6px;font-size:13px;font-family:inherit}
+input:focus,textarea:focus{outline:none;border-color:var(--gold)}
+textarea{min-height:220px;resize:vertical;font-family:monospace;font-size:12px}
+.btn{padding:9px 18px;border-radius:6px;border:1px solid var(--border);background:var(--gold);color:#0a0d14;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px}
+.btn2{background:transparent;color:var(--text2)}
+.btn2:hover{border-color:var(--gold);color:var(--gold)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.stat{display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.st-fact{background:#0a3a2a;color:#7fff9a;border:1px solid var(--green)}
+.st-interp{background:#1a1505;color:#f1c40f;border:1px solid #5a4a00}
+.st-unsup{background:#1a0505;color:#ff8888;border:1px solid var(--red)}
+.st-claim{background:#1a1505;color:var(--gold);border:1px solid #5a4a00}
+.st-header{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.st-proposed{background:#1a1505;color:#f1c40f;border:1px solid #5a4a00}
+.score{font-size:44px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+.score-low{color:#7fff9a}
+.score-mid{color:#f1c40f}
+.score-high{color:#ff8888}
+.matrix-h{font-size:12px;font-weight:700;color:var(--gold);margin:14px 0 8px;text-transform:uppercase;letter-spacing:1px}
+.watermark{color:#3a4a5a;font-size:10px;text-align:center;padding:10px;border-top:1px dashed var(--border);margin-top:16px;letter-spacing:1px}
+.warn{background:#1a1505;border:1px solid #5a4a00;color:var(--yellow);padding:10px 14px;border-radius:6px;font-size:12px;line-height:1.6;margin-bottom:14px}
+.warn-red{background:#1a0505;border:1px solid var(--red);color:#ff8888}
+table{width:100%;border-collapse:collapse;font-size:12px}
+table th{background:var(--surface2);color:var(--gold);text-align:left;padding:8px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+table td select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:4px;font-size:11px;font-family:inherit}
+table td input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:4px;font-size:11px;font-family:inherit;width:100%}
+table tr.claim-row:hover{background:var(--surface2)}
+.claim-text{font-family:monospace;font-size:11px;color:var(--text);background:var(--bg);padding:6px 8px;border-radius:4px;margin-bottom:4px;word-break:break-word}
+.claim-meta{font-size:10px;color:var(--text2)}
+.dressing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}
+.dressing-cell{background:var(--surface2);border:1px solid var(--border);padding:8px 10px;border-radius:4px}
+.dressing-cell .lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.dressing-cell .val{font-size:18px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.formula{background:var(--bg);border:1px solid var(--border);padding:10px 12px;border-radius:4px;font-family:monospace;font-size:11px;color:var(--text2);margin-top:8px;line-height:1.6}
+@media print{body{background:#fff;color:#000}.header,.no-print{display:none!important}.card{border:1px solid #999;page-break-inside:avoid}.watermark{color:#888;border-color:#aaa}.score{color:#000}table th{background:#eee}table td select{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">DELIVERABLE AUDITOR <span>| Pilot Build v0.2.0 PROPOSED — Deterministic · Offline · No Network</span></div>
+  <div class="badge">Team Axis Sovereign Energy — Flip the Switch Hackathon</div>
+</div>
+<div class="wrap">
+<div class="warn no-print"><strong>PILOT BUILD v0.2.0 — STATUS: PROPOSED.</strong> Commissioned by Founder Declaration 2026-11-04 (Path A). Supersedes v0.1.0 (SUPERSEDED — formula bug, see changelog). Cross-seat audit by Astrid pending. This instrument enforces doctrine rule #9 (self-scan): every deliverable ships with a claim-by-claim grading table. No grade column, no ship. The auditor surfaces claims; the human fills the grade. <strong>The instrument does not grade. The auditor grades.</strong></div>
+
+
+<div class="card no-print">
+  <div class="card-title">Deliverable Intake</div>
+  <div class="row" style="margin:0 0 10px"><input type="text" id="opname" placeholder="Operator name (required at scan time)" style="flex:1;min-width:200px"/><input type="text" id="docname" placeholder="Deliverable name (e.g. Five-Point Pattern Read — TensorWave Newsletter)" style="flex:1;min-width:240px"/></div>
+  <textarea id="doctext" placeholder="Paste deliverable text here (memo, analysis, report, claim-by-claim read, structural pattern mapping). The auditor will extract claims, detect structural dressing, and produce the audit table. The grade column is filled by you."></textarea>
+  <div class="row">
+    <input type="file" id="docfile" accept=".txt,.md,.json,.text" style="color:var(--text2);font-size:12px"/>
+    <button class="btn" id="run">RUN AUDIT</button>
+    <button class="btn btn2" id="clear">CLEAR</button>
+    <button class="btn btn2" id="recalc" style="display:none">RECALC SDF</button>
+    <span id="filestatus" style="font-size:11px;color:var(--text2)"></span>
+  </div>
+</div>
+
+<div id="report"></div>
+</div>
+
+<script>
+// ===================== SHA-256 (public-domain compact implementation, reused from Substance Scanner v0.11.2) =====================
+function sha256(ascii){ascii=unescape(encodeURIComponent(ascii));function rr(v,a){return(v>>>a)|(v<<(32-a))}var mp=Math.pow,mw=mp(2,32),i,j,result='',words=[],abl=ascii.length*8;var hash=sha256.h=sha256.h||[],k=sha256.k=sha256.k||[],pc=k.length,comp={};for(var cand=2;pc<64;cand++){if(!comp[cand]){for(i=0;i<313;i+=cand)comp[i]=cand;hash[pc]=(mp(cand,.5)*mw)|0;k[pc++]=(mp(cand,1/3)*mw)|0}}ascii+='\x80';while(ascii.length%64-56)ascii+='\x00';for(i=0;i<ascii.length;i++){j=ascii.charCodeAt(i);if(j>>8)return;words[i>>2]|=j<<((3-i)%4)*8}words[words.length]=(abl/mw)|0;words[words.length]=abl;for(j=0;j<words.length;){var w=words.slice(j,j+=16),oldHash=hash;hash=hash.slice(0,8);for(i=0;i<64;i++){var w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];var t1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+(rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);var t2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));hash=[(t1+t2)|0].concat(hash);hash[4]=(hash[4]+t1)|0}for(i=0;i<8;i++)hash[i]=(hash[i]+oldHash[i])|0}for(i=0;i<8;i++){for(j=3;j+1;j--){var b=(hash[i]>>(j*8))&255;result+=((b<16)?0:'')+b.toString(16)}}return result}
+
+// ===================== CLAIM EXTRACTION PATTERNS (v0.1.0) =====================
+// Each pattern detects a "claim unit" — a structural element of a deliverable
+// that asserts something. The auditor (human) grades each as fact / interpretation / unsupported.
+// Patterns do NOT grade. Patterns SURFACE. Grading is human work, by doctrine.
+
+var CLAIM_PATTERNS=[
+  {id:'C1',label:'Numbered bold header',desc:'Matches "1. **HEADER**" — top-level structural claim'},
+  {id:'C2',label:'Bold header (no number)',desc:'Matches "**HEADER**" — section divider as claim'},
+  {id:'C3',label:'Numbered item',desc:'Matches "1. text" — enumerated claim without bold'},
+  {id:'C4',label:'Bullet item',desc:'Matches "- text" or "* text" — bulleted claim'},
+  {id:'C5',label:'Declarative sentence',desc:'Standalone sentence with assertion verb (is/are/was/were/has/makes/etc.)'},
+  {id:'C6',label:'Verdict label',desc:'VERIFIED / CONFIRMED / PROVEN / RATIFIED / CANONICAL / REJECTED — claim by label'},
+  {id:'C7',label:'Capital-felony vocabulary',desc:'FRAUD / MALLEUS / EMERGENCY / DOCTRINE / PATTERN / ENEMY / VILLAIN / CRISIS / URGENCY — escalatory framing'},
+  {id:'C8',label:'Quoted attribution',desc:'"quoted phrase" presented as evidence — source text claim'}
+];
+
+// ===================== STRUCTURAL DRESSING MARKERS (v0.1.0) =====================
+// These count the visual weight a deliverable carries. Heavy dressing + low fact-ratio
+// = the SDF signal. The dressing does not itself constitute fraud; it is the weight
+// under which interpretation can be disguised as evidence.
+
+var DRESSING_PATTERNS=[
+  {id:'D1',label:'ALL CAPS words (3+ chars)',re:/\b[A-Z]{3,}\b/g,weight:1},
+  {id:'D2',label:'Bold markdown (**...**)',re:/\*\*[^*]+\*\*/g,weight:1},
+  {id:'D3',label:'Numbered headers (1. **)',re:/^\s*\d+[.)]?\s+\*\*/gm,weight:2},
+  {id:'D4',label:'Verdict labels',re:/\b(VERIFIED|CONFIRMED|PROVEN|RATIFIED|CANONICAL|REJECTED|LOCKED|SEALED)\b/g,weight:2},
+  {id:'D5',label:'Capital-felony vocabulary',re:/\b(FRAUD|MALLEUS|EMERGENCY|DOCTRINE|PATTERN|ENEMY|VILLAIN|CRISIS|URGENCY|DOCTRINE)\b/gi,weight:3},
+  {id:'D6',label:'Em-dash / colon emphasis',re:/\s—\s|:\s/g,weight:1},
+  {id:'D7',label:'Numbered list completeness',re:/(^|\n)\s*\d+[.)]\s/g,weight:1}
+];
+
+var NORM_POLICY='fold+NFKC+LF+BOM+surFFFD+zwStrip+wsCollapse+cmbStrip';
+
+// ===================== NORMALIZATION (reused from Substance Scanner v0.11.2) =====================
+var CONFUSABLES_V10 = {"а":"a","е":"e","о":"o","р":"p","с":"c","у":"y","х":"x","А":"A","Е":"E","О":"O","Р":"P","С":"C","У":"Y","Х":"X","в":"B","г":"r","д":"g","з":"3","и":"u","й":"u","к":"k","м":"m","н":"h","п":"n","т":"T","ц":"u","ш":"w","щ":"w","ъ":"b","ь":"b","і":"i","ї":"i","ј":"j","љ":"b","њ":"b","џ":"m","Α":"A","Β":"B","Ε":"E","Ζ":"Z","Η":"H","Ι":"I","Κ":"K","Μ":"M","Ν":"N","Ο":"O","Ρ":"P","Τ":"T","Υ":"Y","Χ":"X","α":"a","β":"B","ε":"e","ζ":"3","η":"n","ι":"i","κ":"k","μ":"m","ν":"v","ο":"o","ρ":"p","τ":"t","υ":"u","χ":"x"};
+var FOLD_POLICY_V10 = "homoglyph-fold-v2: multi-script confusables folded toward Latin (64 entries: 36 Cyrillic + 28 Greek). Declared direction. Total and deterministic. Limitation: legitimate non-Latin input may produce false hits on Latin patterns.";
+function foldHomoglyphsV10(text){var out='';for(var i=0;i<text.length;i++){var ch=text.charAt(i);out+=(CONFUSABLES_V10[ch]!==undefined)?CONFUSABLES_V10[ch]:ch}return out}
+
+function normalizeText(t){
+  t=foldHomoglyphsV10(t);
+  t=t.replace(/^﻿/,'').replace(/\r\n?/g,'\n')
+   .replace(/[​-‏  ‪-‬⁠-⁤⁦-⁩﻿­]/g,'')
+   .replace(/[ 	]+/g,' ').replace(/  +/g,' ');
+  var out='',i=0;
+  while(i<t.length){var c=t.charCodeAt(i);
+    if(c>=0xD800&&c<=0xDBFF){var d=t.charCodeAt(i+1);if(d>=0xDC00&&d<=0xDFFF){out+=t[i]+t[i+1];i+=2;continue}out+='�';i++;continue}
+    if(c>=0xDC00&&c<=0xDFFF){out+='�';i++;continue}
+    out+=t[i];i++;}
+  out=out.replace(/[̀-ͯ᪰-᫿᷀-᷿︠-︯]/g,'');
+  return out.normalize('NFKC');}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// ===================== CLAIM EXTRACTION ENGINE =====================
+function extractClaims(text){
+  var claims=[];
+  var lines=text.split('\n');
+  var claimIdx=0;
+
+  function addClaim(type,header,body,raw,line){
+    claimIdx++;
+    claims.push({
+      idx:claimIdx,
+      type:type,
+      header:header||'',
+      body:body||'',
+      raw:raw,
+      line:line,
+      grade:'',      // empty by default — human fills
+      verdict:'',    // empty by default — human fills
+      note:''        // empty by default — human fills
+    });
+  }
+
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i];
+    var trimmed=line.trim();
+    if(!trimmed) continue;
+
+    // C1: Numbered bold header: "1. **HEADER**: body" or "1. **HEADER**"
+    var m1=trimmed.match(/^(\d+)[.)]?\s*\*\*([^*]+)\*\*\s*:?\s*(.*)$/);
+    if(m1){addClaim('C1-numbered-bold-header',m1[2],m1[3]||'',trimmed,i+1);continue;}
+
+    // C2: Bold header (no number): "**HEADER**: body"
+    var m2=trimmed.match(/^\*\*([^*]{3,})\*\*\s*:?\s*(.*)$/);
+    if(m2){addClaim('C2-bold-header',m2[1],m2[2]||'',trimmed,i+1);continue;}
+
+    // C3: Numbered item: "1. text"
+    var m3=trimmed.match(/^(\d+)[.)]\s+(.+)$/);
+    if(m3){addClaim('C3-numbered-item','',m3[2],trimmed,i+1);continue;}
+
+    // C4: Bullet item: "- text" or "* text"
+    var m4=trimmed.match(/^[-*]\s+(.+)$/);
+    if(m4){addClaim('C4-bullet-item','',m4[1],trimmed,i+1);continue;}
+
+    // C5: Declarative sentence — split paragraph into sentences
+    var sentences=trimmed.match(/[^.!?]+[.!?]+/g)||[trimmed];
+    for(var j=0;j<sentences.length;j++){
+      var s=sentences[j].trim();
+      if(s.length<20) continue;  // skip too-short fragments
+      // Must contain an assertion verb to count as a claim
+      if(/\b(is|are|was|were|has|have|makes|means|shows|proves|demonstrates|indicates|reveals|confirms|establishes|implies|suggests|constitutes|amounts to)\b/i.test(s)){
+        addClaim('C5-declarative-sentence','',s,s,i+1);
+      }
+    }
+  }
+
+  // C6/C7/C8: Scan for verdict labels, felony vocabulary, quoted attributions
+  // These are surfaced separately as "dressing claims" — high-density red flags
+  var verdictMatches=text.match(/\b(VERIFIED|CONFIRMED|PROVEN|RATIFIED|CANONICAL|REJECTED|LOCKED|SEALED)\b/g)||[];
+  var felonyMatches=text.match(/\b(FRAUD|MALLEUS|EMERGENCY|DOCTRINE|PATTERN|ENEMY|VILLAIN|CRISIS|URGENCY)\b/gi)||[];
+  var quoteMatches=text.match(/"[^"]{10,}"/g)||[];
+
+  return {
+    claims:claims,
+    verdictCount:verdictMatches.length,
+    felonyCount:felonyMatches.length,
+    quoteCount:quoteMatches.length,
+    verdictSamples:verdictMatches.slice(0,5),
+    felonySamples:felonyMatches.slice(0,5),
+    quoteSamples:quoteMatches.slice(0,5)
+  };
+}
+
+// ===================== DRESSING DETECTION =====================
+function detectDressing(text){
+  var dressing=[];
+  var totalWeight=0;
+  var totalCount=0;
+  for(var i=0;i<DRESSING_PATTERNS.length;i++){
+    var p=DRESSING_PATTERNS[i];
+    var matches=text.match(p.re)||[];
+    var count=matches.length;
+    var weight=count*p.weight;
+    dressing.push({id:p.id,label:p.label,count:count,weight:weight,samples:matches.slice(0,3)});
+    totalWeight+=weight;
+    totalCount+=count;
+  }
+  return {items:dressing,totalWeight:totalWeight,totalCount:totalCount};
+}
+
+// ===================== SDF COMPOSITE COMPUTATION (v0.2.0 — corrected) =====================
+// Per Founder Declaration 2026-11-04 item 2:
+//   SDF composite = (fact-grade ÷ total claims) weighted by structural dressing
+//
+// v0.1.0 FORMULA (SUPERSEDED — bug: penalized fact-grade when dressing=0):
+//   SDF_INTEGRITY = round( factRatio * (1 + dressingWeight) / 2 * 100 )
+//   At factRatio=1.0, dressingWeight=0 → Integrity = 50 (penalizes cleanest case)
+//   At factRatio=1.0, dressingWeight=1 → Integrity = 100 (rewards dressing)
+//   This is wrong. The /2 normalization assumes dressing always present.
+//   Caught by Astrid cross-seat audit 2026-11-04. Named miss #21.
+//
+// v0.2.0 FORMULA (current — dressing weight lands on Fraud Risk, where declaration puts it):
+//   SDF_INTEGRITY = round( factRatio * 100 )
+//   FRAUD_RISK    = round( (1 - factRatio) * dressingWeight * 100 )
+//
+// Independence: Integrity measures soundness (fact ratio alone).
+//              Fraud Risk measures disguise (failure ratio × dressing weight).
+//              The two are decoupled by design.
+//              A perfectly factual deliverable with no dressing = Integrity 100, Fraud Risk 0.
+//              A perfectly factual deliverable with heavy dressing = Integrity 100, Fraud Risk 0.
+//              A 20% factual deliverable with heavy dressing = Integrity 20, Fraud Risk 80.
+
+function computeSDF(claims,dressing){
+  var graded=claims.filter(function(c){return c.grade&&c.grade.length>0;});
+  if(graded.length===0){
+    return {
+      graded:0,
+      factCount:0,
+      interpretationCount:0,
+      unsupportedCount:0,
+      factRatio:0,
+      dressingWeight:0,
+      sdfIntegrity:null,
+      fraudRisk:null,
+      state:'NO GRADES ENTERED — audit incomplete, deliverable cannot ship under Path C'
+    };
+  }
+  var factCount=graded.filter(function(c){return c.grade==='fact';}).length;
+  var interpCount=graded.filter(function(c){return c.grade==='interpretation';}).length;
+  var unsupCount=graded.filter(function(c){return c.grade==='unsupported';}).length;
+  var totalGraded=graded.length;
+  var totalClaims=claims.length;
+  var factRatio=factCount/totalGraded;
+
+  // Dressing weight normalized: 0..1, capped at 1
+  // Heuristic: a clean 5-claim deliverable with 0 dressing = weight 0.
+  // A 5-claim deliverable with 15 dressing markers = weight 1.
+  var dressingWeight=Math.min(1,dressing.totalWeight/(2*Math.max(1,totalClaims)));
+
+  // v0.2.0 corrected formulas (see header block above for v0.1.0 → v0.2.0 transition)
+  // Integrity = pure fact ratio × 100 (dressing does not amplify integrity)
+  // Fraud Risk = failure ratio × dressing weight × 100 (dressing is the disguise multiplier)
+  var sdfIntegrity=Math.round(factRatio*100);
+  var fraudRisk=Math.round((1-factRatio)*dressingWeight*100);
+
+  var state='AUDITED';
+  if(factRatio<0.5 && dressingWeight>0.4){state='SDF HIGH — heavy structural dressing carrying mostly interpretation. Path C: do not ship.';}
+  else if(factRatio>=0.5 && dressingWeight>0.4){state='SDF MID — heavy dressing, but fact-grade holds. Ship with footnote on dressing.';}
+  else if(factRatio<0.5 && dressingWeight<=0.4){state='SDF LOW-DRESSING — weak analysis, not fraud. Revise, do not ship as-is.';}
+  else{state='SDF CLEAN — fact-grade holds, dressing proportionate. Cleared to ship.';}
+
+  return {
+    graded:totalGraded,
+    ungraded:totalClaims-totalGraded,
+    factCount:factCount,
+    interpretationCount:interpCount,
+    unsupportedCount:unsupCount,
+    totalClaims:totalClaims,
+    factRatio:factRatio,
+    dressingWeight:dressingWeight,
+    sdfIntegrity:sdfIntegrity,
+    fraudRisk:fraudRisk,
+    state:state
+  };
+}
+
+// ===================== AUDIT RUN =====================
+function runAudit(text,docName,opName){
+  text=normalizeText(text);
+  var extracted=extractClaims(text);
+  var dressing=detectDressing(text);
+
+  // Pattern set digest — for reproducibility
+  var patternSet={
+    claimPatterns:CLAIM_PATTERNS.map(function(p){return {id:p.id,label:p.label,desc:p.desc};}),
+    dressingPatterns:DRESSING_PATTERNS.map(function(p){return {id:p.id,label:p.label,re:p.re.source,weight:p.weight};}),
+    norm:NORM_POLICY,
+    fold:FOLD_POLICY_V10,
+    logicVer:'0.2.0'
+  };
+  var patternDigestStr=JSON.stringify(patternSet);
+  var pHash=sha256(patternDigestStr).slice(0,8).toUpperCase();
+  var scanIdFull=sha256(text+'\n---PATTERNSET---\n'+patternDigestStr);
+  var scanId=scanIdFull.slice(0,16);
+
+  return {
+    operator:opName||'',
+    doc:docName||'(unnamed deliverable)',
+    ts:new Date().toISOString(),
+    claims:extracted.claims,
+    dressing:dressing,
+    extras:{
+      verdictCount:extracted.verdictCount,
+      felonyCount:extracted.felonyCount,
+      quoteCount:extracted.quoteCount,
+      verdictSamples:extracted.verdictSamples,
+      felonySamples:extracted.felonySamples,
+      quoteSamples:extracted.quoteSamples
+    },
+    scanId:scanId,
+    scanIdFull:scanIdFull,
+    pHash:pHash,
+    chars:text.length,
+    normalized:NORM_POLICY,
+    foldPolicy:FOLD_POLICY_V10,
+    patternDigest:patternDigestStr,
+    sdf:null  // computed on grade entry
+  };
+}
+
+// ===================== REPORT RENDERING =====================
+function renderReport(r){
+  var h='';
+
+  // Cover
+  h+='<div class="card"><div class="card-title">Cover</div>'+
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">'+
+  '<div><span style="color:var(--text2)">Deliverable:</span> '+esc(r.doc)+'</div>'+
+  '<div><span style="color:var(--text2)">Scan ID (SHA-256/16):</span> <span style="font-family:monospace;color:var(--gold)">'+r.scanId+'</span></div>'+
+  '<div><span style="color:var(--text2)">Pattern Set Hash:</span> <span style="font-family:monospace;color:var(--gold)">'+r.pHash+'</span> (v0.1.0)</div>'+
+  '<div><span style="color:var(--text2)">Engine Status:</span> <span class="stat st-proposed">PROPOSED — NOT RATIFIED</span></div>'+
+  '<div><span style="color:var(--text2)">Timestamp (UTC):</span> '+r.ts+'</div>'+
+  '<div><span style="color:var(--text2)">Operator:</span> '+(r.operator?esc(r.operator):'NOT ENTERED — UNSIGNED')+'</div>'+
+  '<div><span style="color:var(--text2)">Network:</span> OFFLINE — NO NETWORK TRANSMISSION</div>'+
+  '<div><span style="color:var(--text2)">Input length:</span> '+r.chars+' chars</div>'+
+  '<div><span style="color:var(--text2)">Claims extracted:</span> '+r.claims.length+' · Verdict labels: '+r.extras.verdictCount+' · Felony vocabulary: '+r.extras.felonyCount+' · Quoted attributions: '+r.extras.quoteCount+'</div>'+
+  '<div><span style="color:var(--text2)">Normalization:</span> '+r.normalized+'</div>'+
+  '</div></div>';
+
+  // SDF Composite — initial state (no grades yet)
+  var sdf=computeSDF(r.claims,r.dressing);
+  r.sdf=sdf;
+  var sdfScoreClass=sdf.sdfIntegrity===null?'':(sdf.sdfIntegrity>=70?'score-low':(sdf.sdfIntegrity>=40?'score-mid':'score-high'));
+  h+='<div class="card"><div class="card-title">SDF Composite — Verdict</div>'+
+  '<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">'+
+  '<div><div class="score '+sdfScoreClass+'" id="sdf-score">'+(sdf.sdfIntegrity===null?'—':sdf.sdfIntegrity)+'</div><div style="font-size:10px;color:var(--text2)">SDF INTEGRITY / 100 (capped)</div></div>'+
+  '<div><div class="score" style="font-size:32px;color:'+(sdf.fraudRisk===null?'#666':(sdf.fraudRisk>=50?'#ff8888':(sdf.fraudRisk>=25?'#f1c40f':'#7fff9a')))+'" id="fraud-risk">'+(sdf.fraudRisk===null?'—':sdf.fraudRisk)+'</div><div style="font-size:10px;color:var(--text2)">FRAUD RISK / 100</div></div>'+
+  '<div><span class="stat st-proposed" id="sdf-state">'+esc(sdf.state)+'</span></div>'+
+  '</div>'+
+  '<div class="formula" id="sdf-formula">'+
+  '<strong>Founder Declaration 2026-11-04 item 2:</strong> SDF composite = (fact-grade ÷ total claims) weighted by structural dressing<br/>'+
+  '<strong>Implementation:</strong> factRatio = '+sdf.factRatio.toFixed(3)+' · dressingWeight = '+sdf.dressingWeight.toFixed(3)+'<br/>'+
+  '<strong>SDF Integrity</strong> = round( factRatio × (1 + dressingWeight) / 2 × 100 ) = '+(sdf.sdfIntegrity===null?'—':sdf.sdfIntegrity)+'<br/>'+
+  '<strong>Fraud Risk</strong> = round( (1 − factRatio) × dressingWeight × 100 ) = '+(sdf.fraudRisk===null?'—':sdf.fraudRisk)+'<br/>'+
+  '<strong>Counts:</strong> fact='+sdf.factCount+' · interpretation='+sdf.interpretationCount+' · unsupported='+sdf.unsupportedCount+' · ungraded='+(sdf.ungraded||0)+' / total '+sdf.totalClaims+
+  '</div></div>';
+
+  // Dressing detection
+  h+='<div class="card"><div class="card-title">Structural Dressing Detection</div>'+
+  '<div style="font-size:11px;color:var(--text2);margin-bottom:8px">Heavy dressing + low fact ratio = the SDF signal. Dressing alone is not fraud; it is the weight under which interpretation can be disguised as evidence.</div>'+
+  '<div class="dressing-grid">';
+  for(var i=0;i<r.dressing.items.length;i++){
+    var d=r.dressing.items[i];
+    h+='<div class="dressing-cell"><div class="lbl">'+esc(d.id)+' · '+esc(d.label)+'</div><div class="val">'+d.count+' <span style="font-size:10px;color:var(--text2)">× w'+d.weight+' = '+d.weight+'</span></div></div>';
+  }
+  h+='</div>'+
+  '<div style="margin-top:10px;font-size:11px;color:var(--text2)">Total dressing weight: <strong style="color:var(--gold)">'+r.dressing.totalWeight+'</strong> · Normalized dressing weight (0–1): <strong style="color:var(--gold)">'+sdf.dressingWeight.toFixed(3)+'</strong></div>';
+  if(r.extras.verdictSamples.length||r.extras.felonySamples.length||r.extras.quoteSamples.length){
+    h+='<div style="margin-top:10px;font-size:11px;color:var(--text2)">';
+    if(r.extras.verdictSamples.length)h+='<div><strong>Verdict labels found:</strong> '+r.extras.verdictSamples.map(esc).join(', ')+'</div>';
+    if(r.extras.felonySamples.length)h+='<div><strong>Felony vocabulary found:</strong> '+r.extras.felonySamples.map(esc).join(', ')+'</div>';
+    if(r.extras.quoteSamples.length)h+='<div><strong>Quoted attributions:</strong> '+r.extras.quoteSamples.map(esc).join(' · ')+'</div>';
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // Audit table
+  h+='<div class="card"><div class="card-title">Audit Table — Claims (Path C Mandatory)</div>'+
+  '<div style="font-size:11px;color:var(--text2);margin-bottom:10px">Every claim extracted from the deliverable appears as a row. The auditor fills <strong>grade</strong> (fact / interpretation / unsupported), <strong>verdict</strong> (hold / strike / fix), and <strong>note</strong>. <strong>No grade column, no ship.</strong> Recalc SDF after grading.</div>';
+  if(r.claims.length===0){
+    h+='<div style="font-size:11px;color:var(--text2)">No claims detected. Deliverable may be empty or non-assertive.</div>';
+  }else{
+    h+='<table><thead><tr>'+
+    '<th style="width:30px">#</th>'+
+    '<th style="width:80px">Type</th>'+
+    '<th>Claim (verbatim)</th>'+
+    '<th style="width:120px">Grade</th>'+
+    '<th style="width:100px">Verdict</th>'+
+    '<th>Note</th>'+
+    '</tr></thead><tbody>';
+    for(var i=0;i<r.claims.length;i++){
+      var c=r.claims[i];
+      var claimDisplay=c.header?'<strong>'+esc(c.header)+'</strong>'+(c.body?' — '+esc(c.body):''):esc(c.body);
+      h+='<tr class="claim-row" data-idx="'+c.idx+'">'+
+      '<td>'+c.idx+'</td>'+
+      '<td><span class="stat st-claim">'+c.type.split('-')[0]+'</span><div style="font-size:9px;color:var(--text2);margin-top:2px">L'+c.line+'</div></td>'+
+      '<td><div class="claim-text">'+claimDisplay+'</div><div class="claim-meta">raw: '+esc(c.raw.slice(0,80))+(c.raw.length>80?'…':'')+'</div></td>'+
+      '<td><select class="grade-select" data-idx="'+c.idx+'"><option value=""></option><option value="fact"'+(c.grade==='fact'?' selected':'')+'>fact</option><option value="interpretation"'+(c.grade==='interpretation'?' selected':'')+'>interpretation</option><option value="unsupported"'+(c.grade==='unsupported'?' selected':'')+'>unsupported</option></select></td>'+
+      '<td><select class="verdict-select" data-idx="'+c.idx+'"><option value=""></option><option value="hold"'+(c.verdict==='hold'?' selected':'')+'>hold</option><option value="strike"'+(c.verdict==='strike'?' selected':'')+'>strike</option><option value="fix"'+(c.verdict==='fix'?' selected':'')+'>fix</option></select></td>'+
+      '<td><input type="text" class="note-input" data-idx="'+c.idx+'" value="'+esc(c.note)+'" placeholder="auditor note"/></td>'+
+      '</tr>';
+    }
+    h+='</tbody></table>';
+    h+='<div class="row no-print"><button class="btn" id="recalc-btn">RECALC SDF</button> <button class="btn btn2" id="export-btn">EXPORT AUDIT TABLE (.md)</button></div>';
+  }
+  h+='</div>';
+
+  // Forensic certificate
+  h+='<div class="card"><div class="card-title">Forensic Certificate</div><div style="font-size:12px;line-height:1.8">'+
+  'Engine: TEZCATL · Deliverable Auditor v0.2.0 ('+CLAIM_PATTERNS.length+' claim detectors, '+DRESSING_PATTERNS.length+' dressing markers) · Team Axis Sovereign Energy · Flip the Switch Hackathon 2026<br/>'+
+  'Pattern set SHA-256: '+sha256(r.patternDigest)+'<br/>'+
+  'Scan ID (full 64): '+r.scanIdFull+'<br/>'+
+  'Scan ID derivation: SHA-256( deliverable text || pattern set ) — first 16 hex chars<br/>'+
+  'AUDIT POSTURE: this instrument does not grade claims. It surfaces them. Grading is human work — by doctrine rule #9 (self-scan) and Path C (Founder Declaration 2026-11-04).<br/>'+
+  'SDF INTEGRITY FORMULA (v0.2.0): round( factRatio × 100 ) — pure fact ratio. Range 0–100. Higher = more sound. Dressing does not amplify integrity.<br/>'+
+  'FRAUD RISK FORMULA (v0.2.0): round( (1 − factRatio) × dressingWeight × 100 ). Range 0–100. Higher = more fraud signal. <strong>Dressing is the disguise multiplier on the failure ratio.</strong><br/>'+
+  'CHANGELOG (v0.1.0 → v0.2.0): formula bug fix. v0.1.0 used Integrity = round( factRatio × (1 + dressingWeight) / 2 × 100 ), which penalized fact-grade content when dressing=0 (perfectly factual + no dressing = 50/100, not 100/100). Caught by Astrid cross-seat audit 2026-11-04, named miss #21. v0.2.0 separates the two measures: Integrity depends only on fact ratio; Fraud Risk carries the dressing weight. v0.1.0 hash 20e7581a…d3a91aa0 preserved on disk as SUPERSEDED record.<br/>'+
+  'TRUTH TABLE (v0.2.0, all four rows reproduce): (1) factRatio 1.0, dressing 0 → Integrity 100, Fraud 0. (2) factRatio 1.0, dressing 1 → Integrity 100, Fraud 0. (3) factRatio 0.2, dressing 1 → Integrity 20, Fraud 80 (smoke test case, unchanged). (4) factRatio 0.2, dressing 0 → Integrity 20, Fraud 0.<br/>'+
+  'CLAIM EXTRACTION LIMITATIONS: regex-based; does not parse clause semantics; declarative-sentence detector requires assertion verbs (is/are/was/were/has/makes/etc.); quoted attribution detector requires double-quoted strings of 10+ chars; non-assertive prose (questions, imperatives, fragments) is not surfaced as a claim. Table-row claims (markdown `| # | claim | source |` format) are NOT detected by v0.1.0 claim patterns — v0.2.0 candidate for C9 detector.<br/>'+
+  'KNOWN GAP: claim extraction is heuristic. A deliverable may contain claims not surfaced by these patterns. The auditor may add rows manually if the instrument missed them; the manual addition must be noted in the audit table.<br/>'+
+  'KNOWN GAP: grading is performed by the human auditor. Two auditors may grade the same claim differently. Two-key (Astrid + GLM, Founder ratifies) is the doctrine for resolving grade disputes.<br/>'+
+  'PATH C COMPLIANCE: every deliverable ships with this table. No grade column, no ship. Interpretation labeled at the line, never in a footer.<br/>'+
+  'OFFLINE: this engine runs entirely in your browser. No servers, no network calls, nothing leaves the page.<br/>'+
+  'REPRODUCTION: load identical deliverable text into this build; identical Scan ID and identical claim extraction are guaranteed (deterministic). SDF composite updates as grades are entered.'+
+  '</div><div class="watermark">SCREENING CLASSIFICATION: Pattern-based claim extraction, not a finding of fact. · DETERMINISTIC · VERIFIABLE · OFFLINE · TEZCATL · Team Axis Sovereign Energy · Demo v0.2.0</div></div>';
+
+  h+='<div class="row no-print"><button class="btn" onclick="window.print()">PRINT / SAVE AS PDF</button></div>';
+  return h;
+}
+
+// ===================== STATE (for live recalc) =====================
+var currentResult=null;
+
+// ===================== EVENT HANDLERS =====================
+if(typeof document!=='undefined'){
+  document.getElementById('run').onclick=function(){
+    var t=document.getElementById('doctext').value,n=document.getElementById('docname').value;
+    if(!t.trim()){alert('Paste or load deliverable text first.');return;}
+    var opn=(document.getElementById('opname')||{}).value||'';
+    currentResult=runAudit(t,n,opn);
+    document.getElementById('report').innerHTML=renderReport(currentResult);
+    document.getElementById('recalc').style.display='inline-block';
+    window.scrollTo(0,document.getElementById('report').offsetTop);
+    bindAuditEvents();
+  };
+
+  document.getElementById('clear').onclick=function(){
+    document.getElementById('doctext').value='';
+    document.getElementById('docname').value='';
+    document.getElementById('report').innerHTML='';
+    document.getElementById('recalc').style.display='none';
+    currentResult=null;
+  };
+
+  document.getElementById('recalc').onclick=function(){
+    if(!currentResult)return;
+    recalcSDF();
+  };
+
+  document.getElementById('docfile').onchange=function(ev){
+    var f=ev.target.files[0]; if(!f)return;
+    var rd=new FileReader();
+    rd.onload=function(e){
+      var txt=e.target.result;
+      if(f.name.toLowerCase().endsWith('.json')){try{var j=JSON.parse(txt);txt=j.text||txt}catch(_){}}
+      document.getElementById('doctext').value=txt;
+      document.getElementById('filestatus').textContent='loaded: '+f.name+' ('+txt.length+' chars)';
+    };
+    rd.readAsText(f);
+  };
+
+  // Delegated event binding for audit table interactions
+  function bindAuditEvents(){
+    var gradeSelects=document.querySelectorAll('.grade-select');
+    var verdictSelects=document.querySelectorAll('.verdict-select');
+    var noteInputs=document.querySelectorAll('.note-input');
+    var recalcBtn=document.getElementById('recalc-btn');
+    var exportBtn=document.getElementById('export-btn');
+
+    function syncClaim(idx,field,value){
+      if(!currentResult)return;
+      for(var i=0;i<currentResult.claims.length;i++){
+        if(currentResult.claims[i].idx===idx){
+          currentResult.claims[i][field]=value;
+          break;
+        }
+      }
+    }
+
+    gradeSelects.forEach(function(sel){
+      sel.onchange=function(){syncClaim(parseInt(this.dataset.idx),'grade',this.value);recalcSDF();};
+    });
+    verdictSelects.forEach(function(sel){
+      sel.onchange=function(){syncClaim(parseInt(this.dataset.idx),'verdict',this.value);};
+    });
+    noteInputs.forEach(function(inp){
+      inp.oninput=function(){syncClaim(parseInt(this.dataset.idx),'note',this.value);};
+    });
+    if(recalcBtn)recalcBtn.onclick=function(){recalcSDF();};
+    if(exportBtn)exportBtn.onclick=function(){exportAuditTable();};
+  }
+
+  function recalcSDF(){
+    if(!currentResult)return;
+    var sdf=computeSDF(currentResult.claims,currentResult.dressing);
+    currentResult.sdf=sdf;
+    var scoreEl=document.getElementById('sdf-score');
+    var riskEl=document.getElementById('fraud-risk');
+    var stateEl=document.getElementById('sdf-state');
+    var formulaEl=document.getElementById('sdf-formula');
+    if(scoreEl){
+      scoreEl.textContent=(sdf.sdfIntegrity===null?'—':sdf.sdfIntegrity);
+      scoreEl.className='score '+(sdf.sdfIntegrity===null?'':(sdf.sdfIntegrity>=70?'score-low':(sdf.sdfIntegrity>=40?'score-mid':'score-high')));
+    }
+    if(riskEl){
+      riskEl.textContent=(sdf.fraudRisk===null?'—':sdf.fraudRisk);
+      riskEl.style.color=(sdf.fraudRisk===null?'#666':(sdf.fraudRisk>=50?'#ff8888':(sdf.fraudRisk>=25?'#f1c40f':'#7fff9a')));
+    }
+    if(stateEl){
+      stateEl.textContent=sdf.state;
+      stateEl.className='stat '+(sdf.state.indexOf('CLEAN')>=0?'st-fact':(sdf.state.indexOf('MID')>=0?'st-interp':(sdf.state.indexOf('HIGH')>=0?'st-unsup':'st-proposed')));
+    }
+    if(formulaEl){
+      formulaEl.innerHTML=
+      '<strong>Founder Declaration 2026-11-04 item 2:</strong> SDF composite = (fact-grade ÷ total claims) weighted by structural dressing<br/>'+
+      '<strong>v0.2.0 Implementation:</strong> factRatio = '+sdf.factRatio.toFixed(3)+' · dressingWeight = '+sdf.dressingWeight.toFixed(3)+'<br/>'+
+      '<strong>SDF Integrity</strong> = round( factRatio × 100 ) = '+(sdf.sdfIntegrity===null?'—':sdf.sdfIntegrity)+' <span style="color:var(--text2)">(dressing does not amplify integrity)</span><br/>'+
+      '<strong>Fraud Risk</strong> = round( (1 − factRatio) × dressingWeight × 100 ) = '+(sdf.fraudRisk===null?'—':sdf.fraudRisk)+' <span style="color:var(--text2)">(dressing is disguise multiplier on failure ratio)</span><br/>'+
+      '<strong>Counts:</strong> fact='+sdf.factCount+' · interpretation='+sdf.interpretationCount+' · unsupported='+sdf.unsupportedCount+' · ungraded='+(sdf.ungraded||0)+' / total '+sdf.totalClaims;
+    }
+  }
+
+  function exportAuditTable(){
+    if(!currentResult){alert('Run an audit first.');return;}
+    var r=currentResult;
+    var md='# Deliverable Audit Table — '+r.doc+'\n\n';
+    md+='**Scan ID:** '+r.scanId+'\n';
+    md+='**Pattern Set Hash:** '+r.pHash+' (v0.1.0)\n';
+    md+='**Timestamp (UTC):** '+r.ts+'\n';
+    md+='**Operator:** '+(r.operator||'NOT ENTERED — UNSIGNED')+'\n';
+    md+='**Engine:** Deliverable Auditor v0.1.0 PROPOSED\n';
+    md+='**Team:** Axis Sovereign Energy — Flip the Switch Hackathon 2026\n\n';
+    md+='## SDF Composite\n\n';
+    if(r.sdf){
+      md+='- **State:** '+r.sdf.state+'\n';
+      md+='- **SDF Integrity:** '+(r.sdf.sdfIntegrity===null?'—':r.sdf.sdfIntegrity)+' / 100\n';
+      md+='- **Fraud Risk:** '+(r.sdf.fraudRisk===null?'—':r.sdf.fraudRisk)+' / 100\n';
+      md+='- **Fact ratio:** '+r.sdf.factRatio.toFixed(3)+'\n';
+      md+='- **Dressing weight:** '+r.sdf.dressingWeight.toFixed(3)+'\n';
+      md+='- **Counts:** fact='+r.sdf.factCount+' · interpretation='+r.sdf.interpretationCount+' · unsupported='+r.sdf.unsupportedCount+' · ungraded='+(r.sdf.ungraded||0)+' / total '+r.sdf.totalClaims+'\n\n';
+    }
+    md+='## Claims\n\n';
+    md+='| # | Type | Line | Claim (verbatim) | Grade | Verdict | Note |\n';
+    md+='|---|---|---|---|---|---|---|\n';
+    for(var i=0;i<r.claims.length;i++){
+      var c=r.claims[i];
+      var claimText=(c.header?'**'+c.header+'**':'')+(c.body?(c.header?' — ':'')+c.body:'');
+      // Escape pipes in cell content
+      claimText=claimText.replace(/\|/g,'\\|');
+      var note=c.note.replace(/\|/g,'\\|');
+      md+='| '+c.idx+' | '+c.type+' | L'+c.line+' | '+claimText+' | '+(c.grade||'')+' | '+(c.verdict||'')+' | '+note+' |\n';
+    }
+    md+='\n## Dressing Detection\n\n';
+    md+='| Marker | Count | Weight per marker | Total weight |\n';
+    md+='|---|---|---|---|\n';
+    for(var i=0;i<r.dressing.items.length;i++){
+      var d=r.dressing.items[i];
+      md+='| '+d.id+' · '+d.label+' | '+d.count+' | '+d.weight+' | '+d.weight+' |\n';
+    }
+    md+='\n**Total dressing weight:** '+r.dressing.totalWeight+'\n\n';
+    md+='---\n\n';
+    md+='*Path C mandatory: every deliverable ships with this table. No grade column, no ship.*\n';
+    md+='*TEZCATL · Deliverable Auditor — Team Axis Sovereign Energy.*\n';
+    md+='*Pattern-based claim extraction, not a finding of fact.*\n';
+
+    // Trigger download
+    var blob=new Blob([md],{type:'text/markdown'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='audit_table_'+r.scanId+'.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+}
+</script>
+</body>
+</html>
