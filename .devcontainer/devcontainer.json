@@ -1,5 +1,5 @@
 {
   "name": "doxa-verification-teammate",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-  "postCreateCommand": "cd bot && npm install"
+  "postCreateCommand": "cd bot && npm install && sh start.sh"
 }
